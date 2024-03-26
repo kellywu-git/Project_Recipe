@@ -12,4 +12,9 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="website">Website</string>
+    <string name="search">Search</string>
+    <string name="shint">Find a recipe or ingredient</string>
+    <string name="saveBtn">Save</string>
+    <string name="retrieveBtn">Retrieve</string>
+    <string name="favourite_pictures">Favourite Recipes</string>
 </resources>

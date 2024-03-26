@@ -37,7 +37,7 @@ public class ReciptMain extends AppCompatActivity {
      *
      */
     class MyRowHolder extends RecyclerView.ViewHolder{
-        public ImageView imageView;
+        public ImageView foodImage;
         public TextView
     }
     @Override
