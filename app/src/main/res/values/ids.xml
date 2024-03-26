@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item name="myToolbar" type="id">myToolbar</item>
-    <item name="fragmentLocation" type="id">fragmentLocation</item>
-</resources>

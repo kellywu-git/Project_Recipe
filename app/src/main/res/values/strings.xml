@@ -13,8 +13,11 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="website">Website</string>
     <string name="search">Search</string>
-    <string name="shint">Find a recipe or ingredient</string>
+    <string name="hint">Find a recipe or ingredient</string>
     <string name="saveBtn">Save</string>
     <string name="retrieveBtn">Retrieve</string>
     <string name="favourite_pictures">Favourite Recipes</string>
+    <string name="placeholder">Recipe Picture</string>
+    <string name="delete">Delete</string>
+    <string name="summary">Summary</string>
 </resources>

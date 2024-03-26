@@ -1,13 +1,19 @@
 package algonquin.cst2335.project_recipe.ui;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -16,19 +22,20 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import algonquin.cst2335.project_recipe.R;
 import algonquin.cst2335.project_recipe.databinding.ActivityReciptMainBinding;
 
 public class ReciptMain extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private ActivityReciptMainBinding binding;
-    ArrayList<FavouriteRecipt>myFavouriteRecipt;
+    private ActivityRecipeMainBinding binding;
+    ArrayList<FavouriteRecipe>myFavouriteRecipe;
     RecyclerView.Adapter myAdapter;
     RequestQueue queue;
     Bitmap reciptPictures;
-    ReciptPictureDAO rpDAO;
-    public reciptPictureDatabase db;
-    ReciptViewModel rvm;
+    RecipePictureDAO rpDAO;
+    public recipePictureDatabase db;
+    RecipeViewModel rvm;
 
     /**
      *
@@ -37,8 +44,35 @@ public class ReciptMain extends AppCompatActivity {
      *
      */
     class MyRowHolder extends RecyclerView.ViewHolder{
-        public ImageView foodImage;
-        public TextView
+        public ImageView imageView;
+        public ImageButton website;
+        public TextView summary;
+        public TextView time;
+        public Button delBtn;
+
+        /**
+         * construction  for MyRowHolder, initialize views and set onclick listeners
+         * @param itemView for viewholder
+          */
+
+        public MyRowHolder(@NonNull View itemView){
+            super(itemView);
+            //initialize views
+         imageView = itemView.findViewById(R.id.imageView);
+         website = itemView.findViewById(R.id.website);
+         summary=itemView.findViewById(R.id.summary);
+         time=itemView.findViewById(R.id.time);
+         delBtn=itemView.findViewById(R.id.delBtn);
+         //set onClick listener for item view
+         itemView.setOnClickListener(click->{
+             int position=getAbsoluteAdapterPosition();
+         });
+//set onclick listener for delete button
+            delBtn.setOnClickListener(click->{
+                int position=getAbsoluteAdapterPosition();
+                FavouriteRecipe clickedFR
+            });
+        }
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
