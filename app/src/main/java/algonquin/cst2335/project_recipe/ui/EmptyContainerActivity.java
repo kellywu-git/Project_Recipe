@@ -20,7 +20,7 @@ public class EmptyContainerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe_container);
+        setContentView(R.layout.recipe_container);
 
         Bundle dataToPass = getIntent().getExtras(); //get the data that was passed from FragmentExample
         Fragment_recipe dFragment = new Fragment_recipe();

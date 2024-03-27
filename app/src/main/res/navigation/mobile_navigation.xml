@@ -9,7 +9,7 @@
         android:id="@+id/nav_home"
         android:name="algonquin.cst2335.project_recipe.ui.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/activity_recipe_container" />
+        tools:layout="@layout/recipe_container" />
 
     <fragment
         android:id="@+id/nav_gallery"
