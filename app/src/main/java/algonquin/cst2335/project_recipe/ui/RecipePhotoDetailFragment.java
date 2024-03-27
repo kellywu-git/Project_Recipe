@@ -61,13 +61,13 @@ public class RecipePhotoDetailFragment extends Fragment
         RecipeDatabase db = Room.databaseBuilder(getContext(), RecipeDatabase.class, getResources().getString(R.string.dataName)).build();
         rDAO = db.rDAO();
         binding.recipeImage.setImageBitmap(this.image);
-        binding.recipe_Date.setText(selected.date);
-        binding.recipe_Author.setText(selected.author);
-        binding.recipe_title.setText(selected.title);
+        binding.recipeDate.setText(selected.date);
+        binding.recipeAuthor.setText(selected.author);
+        binding.recipeTitle.setText(selected.title);
         binding.summary.setText(selected.summary);
         binding.saveBtn.setOnClickListener(click->{
             Executor thread= Executors.newSingleThreadExecutor();
-            thread.execute(()->){
+            thread.execute(()->{
                 boolean exisedRecipe=false;
                 for(RecipeSearched rs: rDAO.getAllrecipes()){
                     if(rs.title.equals(selected.title)){
@@ -85,9 +85,9 @@ public class RecipePhotoDetailFragment extends Fragment
         });
 
     });
-    binding.delete.setOnclickListner(click->{
+    binding.delete.setOnClickListener(click->{
     AlertDialog.Builder builder = new AlertDialog.Builder( getContext());
-    builder.setMessage(getResources().getString(R.string.deletAlert)
+    builder.setMessage(getResources().getString(R.string.deletAlert))
             .setTitle("Question:")
             .setNegativeButton("NO", (dialog,cl)->{})
             .setPositiveButton("YES",(dialog,cl)->{

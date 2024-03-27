@@ -122,9 +122,9 @@ public class RecipeActivity extends AppCompatActivity {
         recipes = recipeModel.downloadedRecipe.getValue();
         queue = Volley.newRequestQueue(this);
         SharedPreferences prefs = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        String searchRecipt=prefs.getString("search", "");
+        String searchRecipe=prefs.getString("search", "");
         EditText sRecipt = findViewById(R.id.search_recipe);
-        sRecipt.setText(searchRecipt);
+        sRecipt.setText(searchRecipe);
         if (recipes == null) {
             recipeModel.downloadedRecipe.setValue(recipes = new ArrayList<>());
         }
@@ -136,6 +136,8 @@ public class RecipeActivity extends AppCompatActivity {
                             Toast.LENGTH_LONG).show();
                     Bitmap image = BitmapFactory.decodeFile(pathname);
                     RecipePhotoDetailFragment recipeFragment=new RecipePhotoDetailFragment(newRecipe, image);
+                    getSupportFragmentManager().beginTransaction().addToBackStack("")
+                            .replace(R.id.fragmentLocation, recipeFragment).commit();
 
                 }
             })
