@@ -17,24 +17,19 @@ public class RecipeSearched
     public int id;
     @ColumnInfo(name="title")
     public String title;
-    @ColumnInfo(name="author")
-    public String author;
 
     @ColumnInfo(name="summary")
     public String summary;
 
-    @ColumnInfo(name="date")
-    public String date;
-
-    @ColumnInfo(name="URL")
+   @ColumnInfo(name="URL")
     public String URL;
 
-     public RecipeSearched(int id, String title, String author, String summary, String date, String URL){
+     public RecipeSearched(int id, String title, String summary, String URL){
         this.id = id;
         this.title = title;
-        this.author = author;
         this.summary = summary;
-        this.date = date;
         this.URL = URL;
     }
 }
+
+///information?apiKey=432da05c987f4b7fab39e7a708c0de77

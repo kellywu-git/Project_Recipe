@@ -61,10 +61,10 @@ public class RecipePhotoDetailFragment extends Fragment
         RecipeDatabase db = Room.databaseBuilder(getContext(), RecipeDatabase.class, getResources().getString(R.string.dataName)).build();
         rDAO = db.rDAO();
         binding.recipeImage.setImageBitmap(this.image);
-        binding.recipeDate.setText(selected.date);
-        binding.recipeAuthor.setText(selected.author);
         binding.recipeTitle.setText(selected.title);
         binding.summary.setText(selected.summary);
+
+        //set up the button onClickListener function
         binding.saveBtn.setOnClickListener(click->{
             Executor thread= Executors.newSingleThreadExecutor();
             thread.execute(()->{
