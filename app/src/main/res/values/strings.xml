@@ -37,6 +37,5 @@
     <string name="click">click here</string>
     <string name="errorMessage">Error</string>
     <string name="searchRecipe">search recipe</string>
-    <string name="url">https://api.spoonacular.com/recipes</string>
-    <string name="apiKey">432da05c987f4b7fab39e7a708c0de77</string>
+
 </resources>

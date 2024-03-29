@@ -15,14 +15,11 @@ import java.util.List;
  */
 public interface RecipeDAO {
     @Insert
-    long insertRecipe(RecipeSearched r);
+    long insertRecipe(RecipePhoto r);
 
-    @Update
-    void updateRecipe(RecipeSearched r);
-
-    @Query("Select * from RecipeSearched")
-    List<RecipeSearched> getAllrecipes();
+    @Query("Select * from RecipePhoto")
+    List<RecipePhoto> getAllrecipes();
 
     @Delete
-    void deleteRecipe(RecipeSearched r);
+    void deleteRecipe(RecipePhoto r);
 }

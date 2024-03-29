@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class RecipeViewModel extends ViewModel
 {
-    public MutableLiveData<ArrayList<RecipeSearched>> downloadedRecipe = new MutableLiveData<>();
+    public MutableLiveData<ArrayList<RecipePhoto>> downloadedRecipe = new MutableLiveData<>();
 
-    public MutableLiveData<RecipeSearched>selectedRecipe = new MutableLiveData<>();
+    public MutableLiveData<RecipePhoto>selectedRecipe = new MutableLiveData<>();
 }

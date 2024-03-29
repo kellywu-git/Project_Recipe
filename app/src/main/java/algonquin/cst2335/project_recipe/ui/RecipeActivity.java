@@ -11,21 +11,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -52,7 +48,7 @@ import java.util.concurrent.Executors;
 import algonquin.cst2335.project_recipe.R;
 import algonquin.cst2335.project_recipe.data.RecipeDAO;
 import algonquin.cst2335.project_recipe.data.RecipeDatabase;
-import algonquin.cst2335.project_recipe.data.RecipeSearched;
+import algonquin.cst2335.project_recipe.data.RecipePhoto;
 import algonquin.cst2335.project_recipe.data.RecipeViewModel;
 
 import algonquin.cst2335.project_recipe.databinding.ActivityRecipeMainBinding;
@@ -68,10 +64,9 @@ public class RecipeActivity extends AppCompatActivity {
 
     protected String recipeSearch;
     protected RequestQueue queue;
-    SharedPreferences prefs;
     RecipeViewModel recipeModel;
     private RecyclerView.Adapter myAdapter;
-    ArrayList<RecipeSearched>recipes;
+    ArrayList<RecipePhoto>recipes;
     ActivityRecipeMainBinding recipebinding;
     RecipeDAO rDAO;
     public final static String PREFERENCES_FILE = "MyData";
@@ -109,18 +104,6 @@ public class RecipeActivity extends AppCompatActivity {
         return true;
     }
 
-//   /**
-//     * @param onPause saves the last search keyword to a sharepreference file.
-//     */
-//    @Override
-//    protected void onPause(){
-//        super.onPause();
-//        SharedPreferences.Editor editor= prefs.edit();
-//        //save the last searched keyword to shared preference file
-//        editor.putString(KEY_LASTSEARCH, lastSearch);
-//        editor.commit();
-//    }
-//    *//
 
     /**
      * @param savedInstanceState saved instance state, if available. it calls when the activity is created.
@@ -129,26 +112,33 @@ public class RecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         recipebinding= ActivityRecipeMainBinding.inflate(getLayoutInflater());
         setContentView(recipebinding.getRoot());
 
         setSupportActionBar(recipebinding.recipeToolbar);
+
         RecipeDatabase db = Room.databaseBuilder(getApplicationContext(), RecipeDatabase.class, "database-name").build();
         rDAO = db.rDAO();
         recipeModel=new ViewModelProvider(this).get(RecipeViewModel.class);
         recipes = recipeModel.downloadedRecipe.getValue();
         queue = Volley.newRequestQueue(this);
         SharedPreferences prefs = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        String searchRecipe=prefs.getString("search", "");
-        EditText sRecipt = findViewById(R.id.searchRecipe);
-        sRecipt.setText(searchRecipe);
-        if (recipes == null) {
+        String recipeStr=prefs.getString("recipe", "");
+        recipeSearch = recipeStr;
+        recipebinding.searchRecipe.setText(recipeSearch);
+    //    EditText sRecipt = findViewById(R.id.searchRecipe);
+    //    sRecipt.setText(searchRecipe);
+        if (recipes == null)
+        {
             recipeModel.downloadedRecipe.setValue(recipes = new ArrayList<>());
         }
-             recipeModel.selectedRecipe.observe(this, (newRecipe)->{
-                String pathname=getFilesDir()+"/"+newRecipe.title + ".png";
+             recipeModel.selectedRecipe.observe(this, (newRecipe)->
+             {
+                String pathname=getFilesDir() + "/" + newRecipe.title + ".png";
                 File file=new File(pathname);
-                if(file.exists()){
+                if(file.exists())
+                {
                     Toast.makeText(getApplicationContext(), pathname,
                             Toast.LENGTH_LONG).show();
                     Bitmap image = BitmapFactory.decodeFile(pathname);
@@ -158,11 +148,11 @@ public class RecipeActivity extends AppCompatActivity {
 
                 }
                 else {
-                    ImageRequest imgReq = new ImageRequest(newRecipe.URL, new Response.Listener<Bitmap>() {
+                    ImageRequest imgReq = new ImageRequest(newRecipe.URL, new Response.Listener<Bitmap>()
+                    {
                         @Override
                         public void onResponse(Bitmap bitmap) {
-                            Toast.makeText(getApplicationContext(), newRecipe.URL,
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), newRecipe.URL, Toast.LENGTH_LONG).show();
                             Bitmap image = bitmap;
                             RecipePhotoDetailFragment recipeFragment = new RecipePhotoDetailFragment(newRecipe, image);
                             getSupportFragmentManager().beginTransaction().addToBackStack("")
@@ -174,11 +164,11 @@ public class RecipeActivity extends AppCompatActivity {
                                 throw new RuntimeException(e);
                             }
                         }
-                    }, 100, 100, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
+                    }, 300, 300, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
-                            Snackbar.make(recipebinding.getRoot(), getResources().getString(R.string.errorMessage), Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(recipebinding.getRoot(), "Error", Snackbar.LENGTH_LONG).show();
                         }
                     });
                     queue.add(imgReq);
@@ -193,12 +183,15 @@ public class RecipeActivity extends AppCompatActivity {
          */
 
         recipebinding.searchBtn.setOnClickListener(click->{
+            String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
+            String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
+
             recipeSearch = recipebinding.searchRecipe.getText().toString();
             recipes.clear();
             myAdapter.notifyDataSetChanged();
 
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString(getResources().getString(R.string.searchRecipe), recipeSearch);
+            editor.putString("recipe", recipeSearch);
             editor.apply();
 
             if(TextUtils.isEmpty(recipeSearch))
@@ -212,23 +205,23 @@ public class RecipeActivity extends AppCompatActivity {
                 recipebinding.searchRecipe.setText("");
 
             }
-            else {
+            else
+            {
                 String stringURL = null;
-                stringURL = getResources().getString(R.string.url)
-                        + recipeSearch
-                        + getResources().getString(R.string.apiKey);
+                stringURL = SpoonUrl + recipeSearch + ApiKey;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,
                         (response) ->
                         {
-                            try {
+                            try
+                            {
                                 JSONArray recipeArray = response.getJSONArray("recipes");
                                 int size = recipeArray.length() > 10 ? 10 : recipeArray.length();
                                 for (int i = 0; i < size; i++) {
                                     JSONObject j = recipeArray.getJSONObject(i);
-                                    JSONObject title = j.getJSONObject("Title");
+                                    JSONObject title = j.getJSONObject("title");
                                     String img = j.getString("img_src").replace("http", "https");
                                     JSONObject s = j.getJSONObject("summary");
-                                    RecipeSearched n = new RecipeSearched(j.getInt("id"), title.getString("title"),
+                                    RecipePhoto n = new RecipePhoto(j.getString("id"), title.getString("title"),
                                             s.getString("summary"), img);
                                     recipes.add(n);
 
@@ -261,7 +254,7 @@ public class RecipeActivity extends AppCompatActivity {
                 super(itemView);
                 itemView.setOnClickListener(clk -> {
                     int position = getAbsoluteAdapterPosition();
-                    RecipeSearched selected = recipes.get(position);
+                    RecipePhoto selected = recipes.get(position);
                     recipeModel.selectedRecipe.postValue(selected);
                 });
                 titleText = itemView.findViewById(R.id.recipeTitle);
@@ -300,7 +293,7 @@ public class RecipeActivity extends AppCompatActivity {
                         Bitmap image = bitmap;
                         holder.recipeImage.setImageBitmap(image);
                     }
-                }, 100, 100, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
+                }, 300, 300, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();

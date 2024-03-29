@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 import algonquin.cst2335.project_recipe.R;
 import algonquin.cst2335.project_recipe.data.RecipeDAO;
 import algonquin.cst2335.project_recipe.data.RecipeDatabase;
-import algonquin.cst2335.project_recipe.data.RecipeSearched;
+import algonquin.cst2335.project_recipe.data.RecipePhoto;
 import algonquin.cst2335.project_recipe.databinding.RecipeDetailLayoutBinding;
 
 /**
@@ -30,7 +30,7 @@ import algonquin.cst2335.project_recipe.databinding.RecipeDetailLayoutBinding;
  */
 public class RecipePhotoDetailFragment extends Fragment
 {
-    RecipeSearched selected;
+    RecipePhoto selected;
     Bitmap image;
     RecipeDAO rDAO;
 
@@ -39,7 +39,7 @@ public class RecipePhotoDetailFragment extends Fragment
      * @param n photo
      * @param image image
      */
-    public RecipePhotoDetailFragment(RecipeSearched n, Bitmap image){
+    public RecipePhotoDetailFragment(RecipePhoto n, Bitmap image){
         selected=n;
         this.image=image;
     }
@@ -69,7 +69,7 @@ public class RecipePhotoDetailFragment extends Fragment
             Executor thread= Executors.newSingleThreadExecutor();
             thread.execute(()->{
                 boolean exisedRecipe=false;
-                for(RecipeSearched rs: rDAO.getAllrecipes()){
+                for(RecipePhoto rs: rDAO.getAllrecipes()){
                     if(rs.title.equals(selected.title)){
                         Snackbar.make(binding.getRoot(),getResources().getString(R.string.alreadyexisted),
                                 Snackbar.LENGTH_LONG).show();
