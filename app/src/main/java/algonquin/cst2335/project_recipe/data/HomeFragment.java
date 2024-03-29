@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +62,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View RootView = inflater.inflate(R.layout.fragment_home, container, false);
         Toolbar mToolbarContact = RootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity) Objects.requireNonNull(getActivity())).setSupportActionBar(mToolbarContact);
+        ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbarContact);
         emptyView= RootView.findViewById(R.id.empty_view2);
         myrv = RootView.findViewById(R.id.recyclerview);
         myrv.setLayoutManager(new GridLayoutManager(getActivity(), 2));
@@ -107,7 +108,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             for (int i = 0; i < testArr.length(); i++) {
                                 JSONObject jsonObject1;
                                 jsonObject1 = testArr.getJSONObject(i);
-                                searchRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"), "https://spoonacular.com/recipeImages/" + jsonObject1.optString("image"), Integer.parseInt(jsonObject1.optString("servings")), Integer.parseInt(jsonObject1.optString("readyInMinutes"))));
+                                searchRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"), "https://spoonacular.com/recipeImages/" + jsonObject1.optString("image")));
                             }
                             if(searchRecipe.isEmpty()){
                                 myrv.setAlpha(0);
@@ -196,21 +197,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
 
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        switch(item.getItemId()){
-            case R.id.recipe_help:
-                AlertDialog.Builder builder=new AlertDialog.Builder(RecipeActivityMain.this);
-                builder.setMessage(getResources().getString(R.string.instruction))
-                        .setTitle(getResources().getString(R.string.help))
-                        .setNegativeButton("close",(dialog,cl)->{})
-                        .create()
-                        .show();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
 
 
 

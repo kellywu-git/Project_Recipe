@@ -49,6 +49,8 @@ public class Recipe
 
          }
 
+    public Recipe(String id, String title, String image, int servings, int readyInMinutes) {
+    }
 
 
     public String getId() {
