@@ -32,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -180,6 +181,23 @@ public class RecipeActivity extends AppCompatActivity {
                     queue.add(imgReq);
                 }
             });
+
+        //method to make network request
+        private void searchForRecipes(final String query){
+            String url = "<https://api.spoonacular.com/recipes/complexSearch?query=>" + query + "&apiKey=432da05c987f4b7fab39e7a708c0de77";
+            // Request a string response from the provided URL.
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    response -> {
+                        // Parse the response and update the RecyclerView
+                        updateRecipeList(response);
+                    }, error -> {
+                // Handle error
+                Toast.makeText(this, "That didn't work!", Toast.LENGTH_SHORT).show();
+            });
+
+        }
+
+        }
         /**
          * set onClickListener for the search button in the binding layout file
          * this method retrieves the user-entered search words from the edittext view and saves it to SharedPreferences.

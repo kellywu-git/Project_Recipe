@@ -14,15 +14,16 @@ public class Recipe
 {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name="id")
-    public int id;
+    public int ID;
 
-   @ColumnInfo(name="pid")
-   public String recipeId;
+   @ColumnInfo(name="id")
+   public String id;
+
     @ColumnInfo(name="title")
     public String title;
 
-    @ColumnInfo(name="summary")
-    public String summary;
+    @ColumnInfo(name="Thumbnail")
+    public String Thumbnail;
 
    @ColumnInfo(name="URL")
     public String URL;
@@ -35,28 +36,40 @@ public class Recipe
 
     }
 
-     public Recipe(String id, String title, String summary, String URL){
-   //     this.id = id;
-       this.recipeId = id;
-        this.title = title;
-        this.summary = summary;
-        this.URL = URL;
+//     public Recipe(String id, String title, String summary, String URL){
+//   //     this.id = id;
+//       this.recipeId = id;
+//        this.title = title;
+//        this.summary = summary;
+//        this.URL = URL;
+//    }
+
+
+    public Recipe(String id, String title, String thumbnail, String URL) {
+        this.id = id;
+        title = title;
+        Thumbnail = thumbnail;
+        URL = URL;
+         }
+
+    public String getId() {
+        return id;
     }
 
-    public Recipe(String id, String title, String image, int i, int i1) {
+    public String getTitle() {
+        return title;
     }
-//    public String getPid(){
-//        return this.pid;
-//    }
-//    public String getTitle(){
-//        return this.title;
-//    }
-//    public String getSummary(){
-//        return this.summary;
-//    }
-//    public String getURL(){
-//        return this.URL;
-//    }
+
+    public String getThumbnail() {
+        return Thumbnail;
+    }
+
+    public String getURL() {
+        return URL;
+    }
+    @Override
+    public String toString() {
+        return getTitle();
+    }
 }
-
 ///information?apiKey=432da05c987f4b7fab39e7a708c0de77

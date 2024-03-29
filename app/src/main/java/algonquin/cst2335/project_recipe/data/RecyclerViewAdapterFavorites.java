@@ -16,29 +16,26 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import algonquin.cst2335.project_recipe.R;
-import algonquin.cst2335.project_recipe.ui.Recipe_Activity;
+public class RecyclerViewAdapterFavorites extends RecyclerView.Adapter<RecyclerViewAdapterFavorites.MyViewHolder> {
+    private Context mContext;
+    private List<Recipe> mData;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
-
-    private Context mContext ;
-    private List<Recipe> mData ;
-
-    public RecyclerViewAdapter(Context mContext, List<Recipe> mData) {
+    RecyclerViewAdapterFavorites(Context mContext, List<Recipe> mData) {
         this.mContext = mContext;
         this.mData = mData;
     }
 
+    @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view ;
+    public RecyclerViewAdapterFavorites.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        view = mInflater.inflate(R.layout.cardview_item_recipe,parent,false);
-        return new MyViewHolder(view);
+        view = mInflater.inflate(R.layout.cardview_item_favorite, parent, false);
+        return new RecyclerViewAdapterFavorites.MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
+    public void onBindViewHolder(RecyclerViewAdapterFavorites.MyViewHolder holder, final int position) {
         holder.tv_recipe_title.setText(mData.get(position).getTitle());
         if (mData.get(position).getThumbnail().isEmpty()) {
             holder.img_recipe_thumbnail.setImageResource(R.drawable.nopicture);
@@ -48,11 +45,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(mContext, Recipe_Activity.class);
-                intent.putExtra("id",mData.get(position).getId());
+                intent.putExtra("id", mData.get(position).getId());
                 intent.putExtra("title",mData.get(position).getTitle());
                 intent.putExtra("img",mData.get(position).getThumbnail());
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mContext.startActivity(intent);
             }
         });
@@ -65,17 +62,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tv_recipe_title,tv_amount_of_dishes,tv_ready_in_mins;
+        TextView tv_recipe_title;
         ImageView img_recipe_thumbnail;
-        CardView cardView ;
+        CardView cardView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            tv_recipe_title = (TextView) itemView.findViewById(R.id.recipe_title_id) ;
-            img_recipe_thumbnail = (ImageView) itemView.findViewById(R.id.recipe_img_id);
-
-
-            cardView = (CardView) itemView.findViewById(R.id.cardview_id);
+            tv_recipe_title = itemView.findViewById(R.id.favorites_recipe_title);
+            img_recipe_thumbnail = itemView.findViewById(R.id.favorites_recipe_img);
+            cardView = itemView.findViewById(R.id.favorites_cardview);
         }
     }
 }

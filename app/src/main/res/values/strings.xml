@@ -37,5 +37,19 @@
     <string name="click">click here</string>
     <string name="errorMessage">Error</string>
     <string name="searchRecipe">search recipe</string>
+    <string name="img_of_recipe">img of recipe</string>
+    <string name="recipe_title">recipe title</string>
+    <string name="recipeImage">image of recipe</string>
+    <string name="instructions">instructions</string>
+    <string name="favorites">favorites</string>
+    <string name="home">home\n</string>
+    <string name="ingredients">search</string>
+    <string name="ingredients_list">ingredients_list</string>
+    <string name="ingredient_image">ingredient image\n</string>
+    <string name="item_name">item name\n</string>
+    <string name="you_haven_t_saved_any_favorite_recipes_yet">you_haven_t_saved_any_favorite_recipes_yet</string>
+    <string name="ingredient_name">ingredient name\n</string>
+    <string name="no_results_found">found no results</string>
+    <string name="choose_your_ingridents">choose your ingredient</string>
 
 </resources>
