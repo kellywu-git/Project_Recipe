@@ -5,15 +5,15 @@ import static android.media.CamcorderProfile.get;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +22,6 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 
@@ -31,6 +30,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,13 +42,14 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import algonquin.cst2335.project_recipe.R;
+import algonquin.cst2335.project_recipe.data.Recipe;
 import algonquin.cst2335.project_recipe.data.RecipeDAO;
 import algonquin.cst2335.project_recipe.data.RecipeDatabase;
-import algonquin.cst2335.project_recipe.data.RecipePhoto;
 import algonquin.cst2335.project_recipe.data.RecipeViewModel;
 
 import algonquin.cst2335.project_recipe.databinding.ActivityRecipeMainBinding;
@@ -66,7 +67,8 @@ public class RecipeActivity extends AppCompatActivity {
     protected RequestQueue queue;
     RecipeViewModel recipeModel;
     private RecyclerView.Adapter myAdapter;
-    ArrayList<RecipePhoto>recipes;
+    private JSONArray recipeArray;
+    private ArrayList<Recipe>recipes;
     ActivityRecipeMainBinding recipebinding;
     RecipeDAO rDAO;
     public final static String PREFERENCES_FILE = "MyData";
@@ -112,6 +114,10 @@ public class RecipeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        final Intent intent = getIntent();
+        final String recipeId = Objects.requireNonNull(intent.getExtras()).getString("id");
+        String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
+        String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
 
         recipebinding= ActivityRecipeMainBinding.inflate(getLayoutInflater());
         setContentView(recipebinding.getRoot());
@@ -183,8 +189,6 @@ public class RecipeActivity extends AppCompatActivity {
          */
 
         recipebinding.searchBtn.setOnClickListener(click->{
-            String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
-            String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
 
             recipeSearch = recipebinding.searchRecipe.getText().toString();
             recipes.clear();
@@ -209,38 +213,37 @@ public class RecipeActivity extends AppCompatActivity {
             {
                 String stringURL = null;
                 stringURL = SpoonUrl + recipeSearch + ApiKey;
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,
-                        (response) ->
-                        {
-                            try
+                RequestQueue requestQueue = Volley.newRequestQueue(this);
+                JsonObjectRequest jsonObjectRequest = new JsonArrayRequest(
+                        Request.Method.GET, stringURL, null,
+                        new Response.Listener<JSONArray>() {
+                            @Override
+                            public void onResponse(JSONArray response) {
+                                try
                             {
-                                JSONArray recipeArray = response.getJSONArray("recipes");
+                                recipeArray = response;
+                                Log.i("the res is:", String.valueOf(recipeArray));
                                 int size = recipeArray.length() > 10 ? 10 : recipeArray.length();
                                 for (int i = 0; i < size; i++) {
                                     JSONObject j = recipeArray.getJSONObject(i);
-                                    JSONObject title = j.getJSONObject("title");
-                                    String img = j.getString("img_src").replace("http", "https");
-                                    JSONObject s = j.getJSONObject("summary");
-                                    RecipePhoto n = new RecipePhoto(j.getString("id"), title.getString("title"),
-                                            s.getString("summary"), img);
-                                    recipes.add(n);
+                                    //         JSONObject title = j.getJSONObject("title");
+                                    //          JSONObject img = j.getJSONObject("img_src");
+                                    //           JSONObject s = j.getJSONObject("summary");
+                                    recipes.add(new Recipe(j.optString("id"), j.optString("title"),
+                                            j.optString("image"), 0, 0));
+                                    //            recipes.add(new RecipePhoto(j.getString("id"), title.getString("title"), img));
 
-                                    Executor thread = Executors.newSingleThreadExecutor();
-                                    thread.execute(() ->
-                                    {
-                                        runOnUiThread(() -> recipebinding.recipeList.setAdapter(myAdapter)); //load the Recyclerview
-                                    });
-                                    myAdapter.notifyItemInserted(recipes.size() - 1);
+                                }
+                                RecyclerViewAdapterSearchResult myAdapter = new RecyclerViewAdapterSearchResult(getApplicationContext(), lstRecipe);
+                                myrv.setAdapter(myAdapter);
+                            } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
                             }
-                            catch (JSONException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        }, (error) -> {});
-                queue.add(request);
+                        },
+
             }
-            });
+
         /**
          * this section is to hold the whole search result - recycler view
          */
@@ -254,7 +257,7 @@ public class RecipeActivity extends AppCompatActivity {
                 super(itemView);
                 itemView.setOnClickListener(clk -> {
                     int position = getAbsoluteAdapterPosition();
-                    RecipePhoto selected = recipes.get(position);
+                    Recipe selected = recipes.get(position);
                     recipeModel.selectedRecipe.postValue(selected);
                 });
                 titleText = itemView.findViewById(R.id.recipeTitle);

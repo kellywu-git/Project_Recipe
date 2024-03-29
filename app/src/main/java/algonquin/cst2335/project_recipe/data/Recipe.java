@@ -10,14 +10,14 @@ import androidx.room.Entity;
  * @March 30, 2024
  */
 @Entity
-public class RecipePhoto
+public class Recipe
 {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name="id")
     public int id;
 
    @ColumnInfo(name="pid")
-   public String pid;
+   public String recipeId;
     @ColumnInfo(name="title")
     public String title;
 
@@ -30,17 +30,20 @@ public class RecipePhoto
     /**
      * constructors - with no parameters.
      */
-    public RecipePhoto()
+    public Recipe()
     {
 
     }
 
-     public RecipePhoto(String id, String title, String summary, String URL){
+     public Recipe(String id, String title, String summary, String URL){
    //     this.id = id;
-       this.pid = id;
+       this.recipeId = id;
         this.title = title;
         this.summary = summary;
         this.URL = URL;
+    }
+
+    public Recipe(String id, String title, String image, int i, int i1) {
     }
 //    public String getPid(){
 //        return this.pid;

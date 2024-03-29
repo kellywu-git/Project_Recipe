@@ -4,7 +4,6 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-import androidx.room.Update;
 
 import java.util.List;
 
@@ -15,11 +14,11 @@ import java.util.List;
  */
 public interface RecipeDAO {
     @Insert
-    long insertRecipe(RecipePhoto r);
+    long insertRecipe(Recipe r);
 
-    @Query("Select * from RecipePhoto")
-    List<RecipePhoto> getAllrecipes();
+    @Query("Select * from Recipe")
+    List<Recipe> getAllrecipes();
 
     @Delete
-    void deleteRecipe(RecipePhoto r);
+    void deleteRecipe(Recipe r);
 }

@@ -3,7 +3,7 @@ package algonquin.cst2335.project_recipe.data;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-@Database(entities = {RecipePhoto.class}, version=1)
+@Database(entities = {Recipe.class}, version=1)
 /**
  * RecipeDatabase extends from RoomDatabase and have abstract class rDAO()
  * @author Kelly Wu
