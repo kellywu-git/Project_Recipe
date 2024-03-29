@@ -15,6 +15,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import algonquin.cst2335.project_recipe.R;
+
 public class RecyclerViewAdapterSearchResult extends RecyclerView.Adapter<RecyclerViewAdapterSearchResult.MyViewHolder> {
 
     private Context mContext;
@@ -35,10 +37,10 @@ public class RecyclerViewAdapterSearchResult extends RecyclerView.Adapter<Recycl
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tv_recipe_title.setText(mData.get(position).getTitle());
         if (mData.get(position).getThumbnail().isEmpty()) {
-            holder.img_recipe_thumbnail.setImageResource(R.drawable.nopicture);
+            holder.img_recipe_thumbnail.setImageResource(R.drawable.ic_launcher_background);
         } else{
             Picasso.get().load(mData.get(position).getThumbnail()).into(holder.img_recipe_thumbnail);
         }

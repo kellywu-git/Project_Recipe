@@ -1,22 +1,17 @@
 package algonquin.cst2335.project_recipe.data;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +30,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,7 +40,6 @@ import java.util.List;
 import java.util.Objects;
 
 import algonquin.cst2335.project_recipe.R;
-import algonquin.cst2335.project_recipe.ui.RecipeActivity;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private List<Recipe> lstRecipe = new ArrayList<>();
@@ -158,7 +151,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             for (int i = 0; i < testArr.length(); i++) {
                                 JSONObject jsonObject1;
                                 jsonObject1 = testArr.getJSONObject(i);
-                                lstRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"), jsonObject1.optString("image"), Integer.parseInt(jsonObject1.optString("servings")), Integer.parseInt(jsonObject1.optString("readyInMinutes"))));
+                                lstRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"), jsonObject1.optString("image")));
                             }
 
                             RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), lstRecipe);

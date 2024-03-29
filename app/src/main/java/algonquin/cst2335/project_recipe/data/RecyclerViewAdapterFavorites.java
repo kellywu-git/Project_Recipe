@@ -16,6 +16,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import algonquin.cst2335.project_recipe.R;
+
 public class RecyclerViewAdapterFavorites extends RecyclerView.Adapter<RecyclerViewAdapterFavorites.MyViewHolder> {
     private Context mContext;
     private List<Recipe> mData;
@@ -30,7 +32,7 @@ public class RecyclerViewAdapterFavorites extends RecyclerView.Adapter<RecyclerV
     public RecyclerViewAdapterFavorites.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        view = mInflater.inflate(R.layout.cardview_item_favorite, parent, false);
+        view = mInflater.inflate(R.layout.cardview_item_favourite, parent, false);
         return new RecyclerViewAdapterFavorites.MyViewHolder(view);
     }
 
@@ -38,7 +40,7 @@ public class RecyclerViewAdapterFavorites extends RecyclerView.Adapter<RecyclerV
     public void onBindViewHolder(RecyclerViewAdapterFavorites.MyViewHolder holder, final int position) {
         holder.tv_recipe_title.setText(mData.get(position).getTitle());
         if (mData.get(position).getThumbnail().isEmpty()) {
-            holder.img_recipe_thumbnail.setImageResource(R.drawable.nopicture);
+            holder.img_recipe_thumbnail.setImageResource(R.drawable.foodicon);
         } else{
             Picasso.get().load(mData.get(position).getThumbnail()).into(holder.img_recipe_thumbnail);
         }

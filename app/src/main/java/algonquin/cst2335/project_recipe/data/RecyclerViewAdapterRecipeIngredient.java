@@ -12,12 +12,14 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import algonquin.cst2335.project_recipe.R;
+
 public class RecyclerViewAdapterRecipeIngredient extends RecyclerView.Adapter<RecyclerViewAdapterRecipeIngredient.MyViewHolder> {
     private Context mContext;
     private List<Ingredient> mData;
     public static List<String> ingredientsList;
 
-    RecyclerViewAdapterRecipeIngredient(Context mContext, List<Ingredient> mData) {
+    public RecyclerViewAdapterRecipeIngredient(Context mContext, List<Ingredient> mData) {
         this.mContext = mContext;
         this.mData = mData;
         ingredientsList = new ArrayList<>();

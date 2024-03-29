@@ -51,5 +51,9 @@
     <string name="ingredient_name">ingredient name\n</string>
     <string name="no_results_found">found no results</string>
     <string name="choose_your_ingridents">choose your ingredient</string>
+    <string name="selectIngredient">You must select one ingredient from Beef, Fish, Chicken or Tuna</string>
+    <string name="msg">Unfortunately, the recipe you were looking for not found, to view the original recipe click on the link below:</string>
+    <string name="href"><![CDATA[<a href=]]></string>
+    <string name="ingridients">Ingredient</string>
 
 </resources>

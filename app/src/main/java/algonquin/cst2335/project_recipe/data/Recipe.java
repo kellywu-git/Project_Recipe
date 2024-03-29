@@ -25,10 +25,7 @@ public class Recipe
     @ColumnInfo(name="Thumbnail")
     public String Thumbnail;
 
-   @ColumnInfo(name="URL")
-    public String URL;
-
-    /**
+      /**
      * constructors - with no parameters.
      */
     public Recipe()
@@ -45,12 +42,14 @@ public class Recipe
 //    }
 
 
-    public Recipe(String id, String title, String thumbnail, String URL) {
+    public Recipe(String id, String title, String thumbnail) {
         this.id = id;
-        title = title;
+        this. title = title;
         Thumbnail = thumbnail;
-        URL = URL;
+
          }
+
+
 
     public String getId() {
         return id;
@@ -64,10 +63,7 @@ public class Recipe
         return Thumbnail;
     }
 
-    public String getURL() {
-        return URL;
-    }
-    @Override
+       @Override
     public String toString() {
         return getTitle();
     }

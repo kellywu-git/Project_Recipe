@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,7 +16,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import algonquin.cst2335.project_recipe.R;
-import algonquin.cst2335.project_recipe.ui.Recipe_Activity;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
 
@@ -41,7 +39,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         holder.tv_recipe_title.setText(mData.get(position).getTitle());
         if (mData.get(position).getThumbnail().isEmpty()) {
-            holder.img_recipe_thumbnail.setImageResource(R.drawable.nopicture);
+            holder.img_recipe_thumbnail.setImageResource(R.drawable.foodicon);
+            holder.img_recipe_thumbnail.setTag(null);
         } else{
             Picasso.get().load(mData.get(position).getThumbnail()).into(holder.img_recipe_thumbnail);
         }

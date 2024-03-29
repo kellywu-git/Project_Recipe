@@ -32,13 +32,13 @@ public class SearchResultsActivity extends AppCompatActivity {
     private RecyclerView myrv;
     private JSONArray testArr;
     private List<Recipe> lstRecipe = new ArrayList<>();
-    private ProgressBar progressBar;
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_results);
+        setContentView(R.layout.activity_search_result);
         ingredients_list= findViewById(R.id.ingredients_names_list);
         String searchText=getStringFromList(RecyclerViewAdapterIngredient.ingredientsList);
         ingredients_list.setText(searchText);
@@ -63,9 +63,9 @@ public class SearchResultsActivity extends AppCompatActivity {
                             for (int i = 0; i < testArr.length(); i++) {
                                 JSONObject jsonObject1;
                                 jsonObject1 = testArr.getJSONObject(i);
-                                lstRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"),jsonObject1.optString("image"), 0, 0));
+                                lstRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"),jsonObject1.optString("thumnail")));
                             }
-                            progressBar.setVisibility(View.GONE);
+
                             RecyclerViewAdapterSearchResult myAdapter = new RecyclerViewAdapterSearchResult(getApplicationContext(), lstRecipe);
                             myrv.setAdapter(myAdapter);
                         } catch (JSONException e) {

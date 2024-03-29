@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layoutDirection="ltr"
-    tools:context=".ui.RecipeActivity">
+    tools:context="u">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -21,7 +21,8 @@
                 android:id="@+id/recipe_img"
                 android:layout_width="616dp"
                 android:layout_height="287dp"
-                android:contentDescription="@string/recipeImage"/>
+                android:contentDescription="@+id/recipe_img"
+                app:srcCompat="@color/common_google_signin_btn_text_light_pressed" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/floatingActionButton"
@@ -33,7 +34,7 @@
                 android:layout_marginBottom="10dp"
                 android:clickable="true"
                 android:focusable="true"
-                app:backgroundTint="@color/white"
+                app:backgroundTint="#FFFFFF"
                 app:borderWidth="0.5dp"
                 app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
 
@@ -59,9 +60,22 @@
                         android:text="@string/recipe_title"
                         android:textStyle="bold" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+
+
+                    <TextView
+                        android:id="@+id/textView37"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:text="@string/ingridients"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recipe_ingredients_rv"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
 
                     <TextView
                         android:id="@+id/textView39"

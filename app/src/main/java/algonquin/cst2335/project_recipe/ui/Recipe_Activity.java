@@ -25,7 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -39,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import algonquin.cst2335.project_recipe.R;
+import algonquin.cst2335.project_recipe.data.Ingredient;
 import algonquin.cst2335.project_recipe.data.RecyclerViewAdapterRecipeIngredient;
 
 public class Recipe_Activity extends AppCompatActivity {
@@ -56,12 +57,12 @@ public class Recipe_Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe_);
+        setContentView(R.layout.activity_recipe);
         final Intent intent = getIntent();
         final String recipeId = Objects.requireNonNull(intent.getExtras()).getString("id");
         mAuth = FirebaseAuth.getInstance();
 
-    //    mRootRef = FirebaseDatabase.getInstance().getReference().child(uid).child(recipeId);
+        //    mRootRef = FirebaseDatabase.getInstance().getReference().child(uid).child(recipeId);
         img = findViewById(R.id.recipe_img);
         title = findViewById(R.id.recipe_title);
         instructions = findViewById(R.id.recipe_instructions);
@@ -73,7 +74,7 @@ public class Recipe_Activity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.i("mRootRef", String.valueOf(dataSnapshot));
                 if (dataSnapshot.getValue() != null) {
-                    fab.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    fab.setImageResource(R.drawable.ic_baseline_favorite_24);
                     like = true;
                 }
             }
@@ -91,7 +92,7 @@ public class Recipe_Activity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (like) {
-                            fab.setImageResource(R.drawable.ic_favorite_black_24dp);
+                            fab.setImageResource(R.drawable.ic_baseline_favorite_24);
                             Map favorites = new HashMap();
                             favorites.put("img", intent.getExtras().getString("img"));
                             favorites.put("title", intent.getExtras().getString("title"));
@@ -129,7 +130,7 @@ public class Recipe_Activity extends AppCompatActivity {
                                 Picasso.get().load((String) response.get("image")).into(img);
                             }
                             catch (Exception e){
-                                img.setImageResource(R.drawable.nopicture);
+                                e.printStackTrace();
                             }
                             title.setText((String) response.get("title"));
 
@@ -141,9 +142,11 @@ public class Recipe_Activity extends AppCompatActivity {
                                     instructions.setText(Html.fromHtml((String) response.get("instructions")));
                             }
                             catch(Exception e){
-                                String msg= "Unfortunately, the recipe you were looking for not found, to view the original recipe click on the link below:" + "<a href="+response.get("spoonacularSourceUrl")+">"+response.get("spoonacularSourceUrl")+"</a>";
+
+                               String Msg = getResources().getString(R.string.msg) + getResources().getString(R.string.href) + response.get("spoonacularSourceUrl")+">"+response.get("spoonacularSourceUrl")+"</a>";
                                 instructions.setMovementMethod(LinkMovementMethod.getInstance());
-                                instructions.setText(Html.(msg));
+                                String msg = Msg;
+                                instructions.setText((msg));
                             }
                             ingredientsArr = (JSONArray) response.get("extendedIngredients");
                             for (int i = 0; i < ingredientsArr.length(); i++) {
