@@ -20,4 +20,7 @@
     <string name="about_us_title">About Us</string>
     <string name="log_out">Log Out</string>
     <string name="season">Season</string>
+    <string name="you_haven_t_saved_any_favorite_recipes_yet">you_haven\'t saved any favorite recipes yet</string>
+    <string name="favorites">favorites\n</string>
+    <string name="logout">logout\n</string>
 </resources>
