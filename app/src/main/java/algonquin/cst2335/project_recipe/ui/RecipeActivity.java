@@ -64,12 +64,13 @@ public class RecipeActivity extends AppCompatActivity {
 
     protected String recipeSearch;
     protected RequestQueue queue;
+    public final static String PREFERENCES_FILE = "MyData";
     RecipeViewModel recipeModel;
     private RecyclerView.Adapter myAdapter;
     ArrayList<RecipePhoto>recipes;
     ActivityRecipeMainBinding recipebinding;
     RecipeDAO rDAO;
-    public final static String PREFERENCES_FILE = "MyData";
+
 
     /**
      * crate the option menu
@@ -98,8 +99,8 @@ public class RecipeActivity extends AppCompatActivity {
                         .create()
                         .show();
                 break;
-            default:
-                return super.onOptionsItemSelected(item);
+//            default:
+//                return super.onOptionsItemSelected(item);
         }
         return true;
     }
@@ -135,7 +136,7 @@ public class RecipeActivity extends AppCompatActivity {
         }
              recipeModel.selectedRecipe.observe(this, (newRecipe)->
              {
-                String pathname=getFilesDir() + "/" + newRecipe.title + ".png";
+                String pathname=getFilesDir() + "/" + newRecipe.id + ".png";
                 File file=new File(pathname);
                 if(file.exists())
                 {
@@ -159,7 +160,7 @@ public class RecipeActivity extends AppCompatActivity {
                                     .replace(R.id.fragmentLocation, recipeFragment).commit();
                             try {
                                 image.compress(Bitmap.CompressFormat.PNG, 100, RecipeActivity.this
-                                        .openFileOutput(newRecipe.title + ".png", Activity.MODE_PRIVATE));
+                                        .openFileOutput(newRecipe.id + ".jpg", Activity.MODE_PRIVATE));
                             } catch (FileNotFoundException e) {
                                 throw new RuntimeException(e);
                             }
@@ -183,8 +184,8 @@ public class RecipeActivity extends AppCompatActivity {
          */
 
         recipebinding.searchBtn.setOnClickListener(click->{
-            String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
-            String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
+//            String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
+//            String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
 
             recipeSearch = recipebinding.searchRecipe.getText().toString();
             recipes.clear();
@@ -208,7 +209,8 @@ public class RecipeActivity extends AppCompatActivity {
             else
             {
                 String stringURL = null;
-                stringURL = SpoonUrl + recipeSearch + ApiKey;
+           //     stringURL = SpoonUrl + recipeSearch + ApiKey;
+                    stringURL = "https://api.spoonacular.com/recipes/complexSearch?query=" + recipeSearch + "&apiKey=6c93a30ed6624a03be850e3d2c118b6b";
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,
                         (response) ->
                         {
@@ -245,22 +247,7 @@ public class RecipeActivity extends AppCompatActivity {
          * this section is to hold the whole search result - recycler view
          */
 
-        class MyRowHolder extends RecyclerView.ViewHolder
-        {
-            TextView titleText;
-            ImageView recipeImage;
-            public MyRowHolder(@NonNull View itemView)
-            {
-                super(itemView);
-                itemView.setOnClickListener(clk -> {
-                    int position = getAbsoluteAdapterPosition();
-                    RecipePhoto selected = recipes.get(position);
-                    recipeModel.selectedRecipe.postValue(selected);
-                });
-                titleText = itemView.findViewById(R.id.recipeTitle);
-                recipeImage = itemView.findViewById(R.id.recipeImage);
-            }
-        }
+
         recipebinding.recipeList.setAdapter(myAdapter = new RecyclerView.Adapter<MyRowHolder>() {
             @NonNull
             @Override
@@ -311,7 +298,22 @@ public class RecipeActivity extends AppCompatActivity {
         recipebinding.recipeList.setLayoutManager(new LinearLayoutManager(this));
 
         }
-    }
+    class MyRowHolder extends RecyclerView.ViewHolder
+    {
+        TextView titleText;
+        ImageView recipeImage;
+        public MyRowHolder(@NonNull View itemView)
+        {
+            super(itemView);
+            itemView.setOnClickListener(clk -> {
+                int position = getAbsoluteAdapterPosition();
+                RecipePhoto selected = recipes.get(position);
+                recipeModel.selectedRecipe.postValue(selected);
+            });
+            titleText = itemView.findViewById(R.id.recipeTitle);
+            recipeImage = itemView.findViewById(R.id.recipeImage);
+        }
+    }    }
 
 
 

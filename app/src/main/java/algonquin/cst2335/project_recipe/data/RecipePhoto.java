@@ -34,7 +34,13 @@ public class RecipePhoto
     {
 
     }
-
+    /**
+     * constructors takes four parameters corresponding to the fields defined in above class.
+     * @param id recipe id in string
+     * @param summary recipe summary
+     * @param title recipe title
+     * @param URL  Spoonacular URL
+     */
      public RecipePhoto(String id, String title, String summary, String URL){
    //     this.id = id;
        this.pid = id;
