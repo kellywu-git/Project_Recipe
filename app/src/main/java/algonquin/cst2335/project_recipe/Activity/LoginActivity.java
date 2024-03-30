@@ -56,14 +56,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if(user_email.isEmpty() || user_password.isEmpty()){
                     throw new Exception("All fields must be filled");
                 }
-                if (!(Patterns.EMAIL_ADDRESS.matcher(user_email).matches())){
-                    throw new Exception("Invalid Email");
-                }
+
                 loginUser(user_email,user_password);
 
             }
             catch (Exception e){
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                throw Exception e;
             }
         }
     }
