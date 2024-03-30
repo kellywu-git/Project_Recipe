@@ -1,29 +1,24 @@
 package algonquin.cst2335.project_recipe.data;
-import android.app.AlertDialog;
-import android.content.Context;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,112 +27,106 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import algonquin.cst2335.project_recipe.Activity.LoginActivity;
+import algonquin.cst2335.project_recipe.Activity.ProfileActivity;
 import algonquin.cst2335.project_recipe.R;
+import algonquin.cst2335.project_recipe.ui.Recipe;
+import algonquin.cst2335.project_recipe.ui.RecyclerViewAdapter;
 
-public class HomeFragment extends Fragment implements View.OnClickListener {
-    private List<Recipe> lstRecipe = new ArrayList<>();
-    private List<Recipe> searchRecipe;
+public class HomeFragment extends Fragment {
+
+    private List<Recipe> listRecipe = new ArrayList<>();
     private JSONArray testArr;
-    private ImageButton searchBtn;
-
-    private TextView searchTv, emptyView;
     private RecyclerView myrv;
+    private ImageButton profile;
+    private FirebaseAuth auth;
+    private ProgressBar progressBar;
+    private TextView emptyView, hiUsertv, customApp;
+    private FirebaseDatabase database;
+    private FirebaseAuth mAuth;
+    public String api_key = "432da05c987f4b7fab39e7a708c0de77";
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
         final View RootView = inflater.inflate(R.layout.fragment_home, container, false);
-        Toolbar mToolbarContact = RootView.findViewById(R.id.toolbar);
-        ((AppCompatActivity) requireActivity()).setSupportActionBar(mToolbarContact);
+        profile = RootView.findViewById(R.id.profilePic);
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+        progressBar = RootView.findViewById(R.id.progressBar2);
+        progressBar.setVisibility(View.VISIBLE);
         emptyView= RootView.findViewById(R.id.empty_view2);
+        hiUsertv = RootView.findViewById(R.id.hiUserr);
+        customApp = RootView.findViewById(R.id.appNameCustom);
+        Typeface customFont = Typeface.createFromAsset(getActivity().getAssets(), "Fonts/mrs-sheppards.regular.ttf");
+        customApp.setTypeface(customFont);
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null){
+            showUserName();
+        }
+        else{
+            sendToLogin();
+        }
         myrv = RootView.findViewById(R.id.recyclerview);
         myrv.setLayoutManager(new GridLayoutManager(getActivity(), 2));
         getRandomRecipes();
-        searchTv = RootView.findViewById(R.id.home_search_et);
-        searchBtn = RootView.findViewById(R.id.home_search_btn);
 
-        searchBtn.setOnClickListener(this);
-        searchTv.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == EditorInfo.IME_ACTION_SEARCH){
-                    if(!v.getText().toString().equals("")) {
-                        emptyView.setVisibility(View.GONE);
-                        myrv.setAlpha(0);
-                        searchRecipe(v.getText().toString());
-                    }
-                    else
-                        Toast.makeText(getContext(), "Type something...", Toast.LENGTH_LONG).show();
-                }
-                return false;
-            }
-        });
-        getActivity().getWindow().setSoftInputMode(
-                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        // Inflate the layout for this fragment
         return RootView;
     }
 
-    private void searchRecipe(String search) {
-        searchRecipe = new ArrayList<Recipe>();
-        String URL="https://api.spoonacular.com/recipes/search?query=" + search + "&number=30&instructionsRequired=true&apiKey=432da05c987f4b7fab39e7a708c0de77";
-        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
-                Request.Method.GET,
-                URL,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            testArr = (JSONArray) response.get("results");
-                            Log.i("the search res is:", String.valueOf(testArr));
-                            for (int i = 0; i < testArr.length(); i++) {
-                                JSONObject jsonObject1;
-                                jsonObject1 = testArr.getJSONObject(i);
-                                searchRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"), "https://spoonacular.com/recipeImages/" + jsonObject1.optString("image")));
-                            }
-                            if(searchRecipe.isEmpty()){
-                                myrv.setAlpha(0);
-                                emptyView.setVisibility(View.VISIBLE);
-                            }
-                            else{
-                                emptyView.setVisibility(View.GONE);
-                                RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), searchRecipe);
-                                myrv.setAdapter(myAdapter);
-                                myrv.setItemAnimator(new DefaultItemAnimator());
-                                myrv.setAlpha(1);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.i("the res is error:", error.toString());
-                    }
-                }
-        );
-        requestQueue.add(jsonObjectRequest);
+    private void showUserName() {
+        mAuth = FirebaseAuth.getInstance();
+        final String id = mAuth.getCurrentUser().getUid();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        databaseReference.child(id).child("userName").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                String hiUser = task.getResult().getValue(String.class);
+                hiUsertv.setText("Hi!! " + hiUser);
+            }
+        });
+    }
+
+    private void sendToLogin() {
+        Intent sendToLogin = new Intent(getActivity(), LoginActivity.class);
+        startActivity(sendToLogin);
+        requireActivity().finish();
     }
 
     private void getRandomRecipes() {
-        String URL = " https://api.spoonacular.com/recipes/random?number=30&instructionsRequired=true&apiKey=432da05c987f4b7fab39e7a708c0de77";
+        String URL = " https://api.spoonacular.com/recipes/random?number=40&apiKey="+api_key;
         RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
@@ -152,12 +141,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                             for (int i = 0; i < testArr.length(); i++) {
                                 JSONObject jsonObject1;
                                 jsonObject1 = testArr.getJSONObject(i);
-                                lstRecipe.add(new Recipe(jsonObject1.optString("id"),jsonObject1.optString("title"), jsonObject1.optString("image")));
+                                listRecipe.add(new Recipe(jsonObject1.optString("id"),
+                                        jsonObject1.optString("title"), jsonObject1.optString("image"),
+                                        Integer.parseInt(jsonObject1.optString("servings")),
+                                        Integer.parseInt(jsonObject1.optString("readyInMinutes" ))));
                             }
-
-                            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), lstRecipe);
+                            RecyclerViewAdapter myAdapter = new RecyclerViewAdapter(getContext(), listRecipe);
                             myrv.setAdapter(myAdapter);
-                            myrv.setItemAnimator(new DefaultItemAnimator());
+                            progressBar.setVisibility(View.GONE);
 
 
                         } catch (JSONException e) {
@@ -169,7 +160,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.i("the res is error:", error.toString());
-
+                        //progressBar.setVisibility(View.GONE);
                         myrv.setAlpha(0);
                         emptyView.setVisibility(View.VISIBLE);
                     }
@@ -177,27 +168,4 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         );
         requestQueue.add(jsonObjectRequest);
     }
-
-    @Override
-    public void onClick(View v) {
-        if(v==searchBtn){
-            try {
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-            } catch (Exception e) {
-            }
-            if(!searchTv.getText().toString().toString().equals("")) {
-
-                myrv.setAlpha(0);
-                searchRecipe(searchTv.getText().toString());
-            }
-            else
-                Toast.makeText(getContext(), "Type something...", Toast.LENGTH_LONG).show();
-        }
-    }
-
-
-
-
-
 }

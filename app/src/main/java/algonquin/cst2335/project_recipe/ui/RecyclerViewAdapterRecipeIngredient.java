@@ -1,12 +1,15 @@
-package algonquin.cst2335.project_recipe.data;
+package algonquin.cst2335.project_recipe.ui;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -25,19 +28,20 @@ public class RecyclerViewAdapterRecipeIngredient extends RecyclerView.Adapter<Re
         ingredientsList = new ArrayList<>();
     }
 
+
     @NonNull
     @Override
     public RecyclerViewAdapterRecipeIngredient.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         LayoutInflater mInflater = LayoutInflater.from(mContext);
-        view = mInflater.inflate(R.layout.item_ingredient, parent, false);
+        view = mInflater.inflate(R.layout.cardview_item_ingredient, parent, false);
         return new RecyclerViewAdapterRecipeIngredient.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final RecyclerViewAdapterRecipeIngredient.MyViewHolder holder, final int position) {
-        holder.tv_ingredient_name.setText(mData.get(position).getName());
-        Picasso.get().load(mData.get(position).getThumbnail()).into(holder.img_ingredient_thumbnail);
+        holder.textview_ingredient_name.setText(mData.get(position).getName());
+        Picasso.get().load(mData.get(position).getThumbnail()).into(holder.ingredientImage_thumbnail);
     }
 
     @Override
@@ -47,14 +51,13 @@ public class RecyclerViewAdapterRecipeIngredient extends RecyclerView.Adapter<Re
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tv_ingredient_name;
-        ImageView img_ingredient_thumbnail;
+        TextView textview_ingredient_name;
+        ImageView ingredientImage_thumbnail;
 
         public MyViewHolder(View itemView) {
             super(itemView);
-            tv_ingredient_name = itemView.findViewById(R.id.recipe_ingredient_name);
-            img_ingredient_thumbnail = itemView.findViewById(R.id.recipe_ingredient_img);
+            textview_ingredient_name = itemView.findViewById(R.id.recipe_ingredient_name);
+            ingredientImage_thumbnail = itemView.findViewById(R.id.recipe_ingredient_img);
         }
     }
-
 }

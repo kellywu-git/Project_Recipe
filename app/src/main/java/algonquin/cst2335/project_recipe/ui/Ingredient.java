@@ -1,4 +1,4 @@
-package algonquin.cst2335.project_recipe.data;
+package algonquin.cst2335.project_recipe.ui;
 public class Ingredient {
     private String name;
     private String Thumbnail;

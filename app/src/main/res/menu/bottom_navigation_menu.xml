@@ -2,18 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 
+    <item
+        android:id="@+id/nav_search"
+        android:title="search"
+        android:icon="@drawable/ic_baseline_search_24"/>
 
     <item
         android:id="@+id/nav_home"
-        android:enabled="true"
-        android:icon="@drawable/ic_home"
-        android:title="@string/home"/>
+        android:title="home"
+        android:icon="@drawable/ic_baseline_home_24"/>
 
     <item
-        android:id="@+id/nav_search"
-        android:enabled="true"
-        android:icon="@drawable/searchicon"
-        android:title="@string/ingredients"/>
-
+        android:id="@+id/nav_favorites"
+        android:title="bookmarks"
+        android:icon="@drawable/ic_baseline_bookmark_24"/>
 
 </menu>
