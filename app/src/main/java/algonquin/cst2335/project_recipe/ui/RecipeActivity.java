@@ -210,7 +210,7 @@ public class RecipeActivity extends AppCompatActivity {
             {
                 String stringURL = null;
            //     stringURL = SpoonUrl + recipeSearch + ApiKey;
-                    stringURL = "https://api.spoonacular.com/recipes/complexSearch?query=" + recipeSearch + "&apiKey=6c93a30ed6624a03be850e3d2c118b6b";
+                    stringURL = "https://api.spoonacular.com/recipes/complexSearch?query=" +recipeSearch+ "&apiKey=6c93a30ed6624a03be850e3d2c118b6b";
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,
                         (response) ->
                         {

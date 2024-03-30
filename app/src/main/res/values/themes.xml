@@ -7,12 +7,4 @@
 
     <style name="Theme.Project_Recipe" parent="Base.Theme.Project_Recipe" />
 
-    <style name="Theme.Project_Recipe.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Project_Recipe.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.Project_Recipe.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

@@ -62,7 +62,7 @@ public class RecipePhotoDetailFragment extends Fragment
         rDAO = db.rDAO();
         binding.recipeImage.setImageBitmap(this.image);
         binding.recipeTitle.setText(selected.title);
-        binding.summary.setText(selected.summary);
+   //     binding.summary.setText(selected.summary);
 
         //set up the button onClickListener function
         binding.saveBtn.setOnClickListener(click->{
@@ -70,7 +70,7 @@ public class RecipePhotoDetailFragment extends Fragment
             thread.execute(()->{
                 boolean exisedRecipe=false;
                 for(RecipePhoto rs: rDAO.getAllrecipes()){
-                    if(rs.title.equals(selected.title)){
+                    if(rs.pid.equals(selected.pid)){
                         Snackbar.make(binding.getRoot(),getResources().getString(R.string.alreadyexisted),
                                 Snackbar.LENGTH_LONG).show();
                         exisedRecipe=true;
