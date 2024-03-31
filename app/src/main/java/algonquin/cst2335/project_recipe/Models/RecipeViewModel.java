@@ -1,9 +1,11 @@
-package algonquin.cst2335.project_recipe.data;
+package algonquin.cst2335.project_recipe.Models;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
+
+import algonquin.cst2335.project_recipe.data.RecipePhoto;
 
 /**
  * this viewModel class extends the ViewModel class provided by the android architecture component library

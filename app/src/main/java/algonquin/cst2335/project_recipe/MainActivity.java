@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import algonquin.cst2335.project_recipe.databinding.ActivityMainBinding;
-import algonquin.cst2335.project_recipe.ui.RecipeActivity;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
@@ -18,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         binding.recipeproject.setOnClickListener(click -> {
-            Intent nextPage = new Intent(MainActivity.this, RecipeActivity.class);
+            Intent nextPage = new Intent(MainActivity.this, SearchActivity.class);
             startActivity(nextPage);
         });
     }

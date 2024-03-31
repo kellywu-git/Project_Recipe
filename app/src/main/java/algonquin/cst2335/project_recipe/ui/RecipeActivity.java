@@ -1,317 +1,174 @@
 package algonquin.cst2335.project_recipe.ui;
 
-import static android.media.CamcorderProfile.get;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.graphics.Bitmap;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import algonquin.cst2335.project_recipe.R;
-import algonquin.cst2335.project_recipe.data.RecipeDAO;
-import algonquin.cst2335.project_recipe.data.RecipeDatabase;
-import algonquin.cst2335.project_recipe.data.RecipePhoto;
-import algonquin.cst2335.project_recipe.data.RecipeViewModel;
 
-import algonquin.cst2335.project_recipe.databinding.ActivityRecipeMainBinding;
-import algonquin.cst2335.project_recipe.databinding.RecipeItemBinding;
-
-/**
- * main activity for recipe search page
- * @author Kelly Wu
- * @date March 30, 2024
- */
 public class RecipeActivity extends AppCompatActivity {
 
+    private TextView title, instructions, likes;
+    private ImageView img;
+    private DatabaseReference mRootRef;
+    private FirebaseAuth mAuth;
+    private JSONArray ingredientsArr;
 
-    protected String recipeSearch;
-    protected RequestQueue queue;
-    RecipeViewModel recipeModel;
-    private RecyclerView.Adapter myAdapter;
-    ArrayList<RecipePhoto>recipes;
-    ActivityRecipeMainBinding recipebinding;
-    RecipeDAO rDAO;
-    public final static String PREFERENCES_FILE = "MyData";
+    private RecyclerView myrv;
+    private boolean like = false;
+    public String api_key = "6c93a30ed6624a03be850e3d2c118b6b";
 
-    /**
-     * crate the option menu
-     * @param menu the menu to create for help
-     * @return true if successfully created
-     */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.recipe_menu, menu);
-        super.onCreateOptionsMenu(menu);
-        return true;
-    }
-    /**
-     * implement onOptionItemSelected function for toolbar
-     * @param item stands for differnet item on toolbar
-     * @return true
-     */
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item){
-        switch(item.getItemId()){
-            case R.id.recipe_help:
-                AlertDialog.Builder builder=new AlertDialog.Builder(RecipeActivity.this);
-                builder.setMessage(getResources().getString(R.string.instruction))
-                        .setTitle(getResources().getString(R.string.help))
-                        .setNegativeButton("close",(dialog,cl)->{})
-                        .create()
-                        .show();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-        return true;
-    }
-
-
-    /**
-     * @param savedInstanceState saved instance state, if available. it calls when the activity is created.
-     *                           initialize the activity by setting the layout, toolbar and adapter
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_recipe);
+        Objects.requireNonNull(getSupportActionBar()).hide();
 
-        recipebinding= ActivityRecipeMainBinding.inflate(getLayoutInflater());
-        setContentView(recipebinding.getRoot());
-
-        setSupportActionBar(recipebinding.recipeToolbar);
-
-        RecipeDatabase db = Room.databaseBuilder(getApplicationContext(), RecipeDatabase.class, "database-name").build();
-        rDAO = db.rDAO();
-        recipeModel=new ViewModelProvider(this).get(RecipeViewModel.class);
-        recipes = recipeModel.downloadedRecipe.getValue();
-        queue = Volley.newRequestQueue(this);
-        SharedPreferences prefs = getSharedPreferences(PREFERENCES_FILE, Context.MODE_PRIVATE);
-        String recipeStr=prefs.getString("recipe", "");
-        recipeSearch = recipeStr;
-        recipebinding.searchRecipe.setText(recipeSearch);
-    //    EditText sRecipt = findViewById(R.id.searchRecipe);
-    //    sRecipt.setText(searchRecipe);
-        if (recipes == null)
-        {
-            recipeModel.downloadedRecipe.setValue(recipes = new ArrayList<>());
-        }
-             recipeModel.selectedRecipe.observe(this, (newRecipe)->
-             {
-                String pathname=getFilesDir() + "/" + newRecipe.title + ".png";
-                File file=new File(pathname);
-                if(file.exists())
-                {
-                    Toast.makeText(getApplicationContext(), pathname,
-                            Toast.LENGTH_LONG).show();
-                    Bitmap image = BitmapFactory.decodeFile(pathname);
-                    RecipePhotoDetailFragment recipeFragment=new RecipePhotoDetailFragment(newRecipe, image);
-                    getSupportFragmentManager().beginTransaction().addToBackStack("")
-                            .replace(R.id.fragmentLocation, recipeFragment).commit();
-
-                }
-                else {
-                    ImageRequest imgReq = new ImageRequest(newRecipe.URL, new Response.Listener<Bitmap>()
-                    {
-                        @Override
-                        public void onResponse(Bitmap bitmap) {
-                            Toast.makeText(getApplicationContext(), newRecipe.URL, Toast.LENGTH_LONG).show();
-                            Bitmap image = bitmap;
-                            RecipePhotoDetailFragment recipeFragment = new RecipePhotoDetailFragment(newRecipe, image);
-                            getSupportFragmentManager().beginTransaction().addToBackStack("")
-                                    .replace(R.id.fragmentLocation, recipeFragment).commit();
-                            try {
-                                image.compress(Bitmap.CompressFormat.PNG, 100, RecipeActivity.this
-                                        .openFileOutput(newRecipe.title + ".png", Activity.MODE_PRIVATE));
-                            } catch (FileNotFoundException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }, 300, 300, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            error.printStackTrace();
-                            Snackbar.make(recipebinding.getRoot(), "Error", Snackbar.LENGTH_LONG).show();
-                        }
-                    });
-                    queue.add(imgReq);
-                }
-            });
-        /**
-         * set onClickListener for the search button in the binding layout file
-         * this method retrieves the user-entered search words from the edittext view and saves it to SharedPreferences.
-         * if it is empty, this method retrieves all recipes from the database and loads them into the recyclerView using the myAdapter adapter
-         * this method sends a GET request to the recipe API with the entered food request and loads up to 10 recipes into the RecyclerView
-         * @param click on onClickListener that triggers when the search button isClicked.
-         */
-
-        recipebinding.searchBtn.setOnClickListener(click->{
-            String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
-            String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
-
-            recipeSearch = recipebinding.searchRecipe.getText().toString();
-            recipes.clear();
-            myAdapter.notifyDataSetChanged();
-
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("recipe", recipeSearch);
-            editor.apply();
-
-            if(TextUtils.isEmpty(recipeSearch))
-            {
-                Executor thread = Executors.newSingleThreadExecutor();
-                thread.execute(()->
-                {
-                    recipes.addAll(rDAO.getAllrecipes());
-                    runOnUiThread(()-> recipebinding.recipeList.setAdapter(myAdapter)); //load the recyclerview
-                        });
-                recipebinding.searchRecipe.setText("");
-
-            }
-            else
-            {
-                String stringURL = null;
-                stringURL = SpoonUrl + recipeSearch + ApiKey;
-                JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,
-                        (response) ->
-                        {
-                            try
-                            {
-                                JSONArray recipeArray = response.getJSONArray("recipes");
-                                int size = recipeArray.length() > 10 ? 10 : recipeArray.length();
-                                for (int i = 0; i < size; i++) {
-                                    JSONObject j = recipeArray.getJSONObject(i);
-                                    JSONObject title = j.getJSONObject("title");
-                                    String img = j.getString("img_src").replace("http", "https");
-                                    JSONObject s = j.getJSONObject("summary");
-                                    RecipePhoto n = new RecipePhoto(j.getString("id"), title.getString("title"),
-                                            s.getString("summary"), img);
-                                    recipes.add(n);
-
-                                    Executor thread = Executors.newSingleThreadExecutor();
-                                    thread.execute(() ->
-                                    {
-                                        runOnUiThread(() -> recipebinding.recipeList.setAdapter(myAdapter)); //load the Recyclerview
-                                    });
-                                    myAdapter.notifyItemInserted(recipes.size() - 1);
-                                }
-                            }
-                            catch (JSONException e)
-                            {
-                                throw new RuntimeException(e);
-                            }
-                        }, (error) -> {});
-                queue.add(request);
-            }
-            });
-        /**
-         * this section is to hold the whole search result - recycler view
-         */
-
-        class MyRowHolder extends RecyclerView.ViewHolder
-        {
-            TextView titleText;
-            ImageView recipeImage;
-            public MyRowHolder(@NonNull View itemView)
-            {
-                super(itemView);
-                itemView.setOnClickListener(clk -> {
-                    int position = getAbsoluteAdapterPosition();
-                    RecipePhoto selected = recipes.get(position);
-                    recipeModel.selectedRecipe.postValue(selected);
-                });
-                titleText = itemView.findViewById(R.id.recipeTitle);
-                recipeImage = itemView.findViewById(R.id.recipeImage);
-            }
-        }
-        recipebinding.recipeList.setAdapter(myAdapter = new RecyclerView.Adapter<MyRowHolder>() {
-            @NonNull
+        final Intent intent = getIntent();
+        final String recipeId = Objects.requireNonNull(intent.getExtras()).getString("id");
+          mAuth = FirebaseAuth.getInstance();
+        //    final String id = mAuth.getCurrentUser().getUid();
+         mRootRef = FirebaseDatabase.getInstance().getReference().child("Users").child(id).child("Bookmarks").child(recipeId);
+        Button fab = findViewById(R.id.recipe_fab2);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            /**
-             * this class is to create the viewHolder to display the recipt photos in the search result
-             * return myRowHolder
-             */
-            public MyRowHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                RecipeItemBinding binding = RecipeItemBinding.inflate(getLayoutInflater());
-                return new MyRowHolder(binding.getRoot());
-            }
-
-            /**
-             * binds data to the ViewHolder and loads the image using ImageRequest
-             * @param holder it should be updated to represent the contents of the item at the given position
-             *               in the data set
-             * @param position the position of the item within the adapter's data set
-             */
-
-            @Override
-            public void onBindViewHolder(@NonNull MyRowHolder holder, int position) {
-                String name = recipes.get(position).title;
-                holder.titleText.setText(name);
-
-                ImageRequest imgReq = new ImageRequest(recipes.get(position).URL, new Response.Listener<Bitmap>()
-                {
+            public void onClick(View v) {
+                like = !like;
+                mRootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onResponse(Bitmap bitmap)
-                    {
-                        Bitmap image = bitmap;
-                        holder.recipeImage.setImageBitmap(image);
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (like) {
+                            Map favorites = new HashMap();
+                            favorites.put("img", intent.getExtras().getString("img"));
+                            favorites.put("title", intent.getExtras().getString("title"));
+                            mRootRef.setValue(favorites);
+                            Toast.makeText(RecipeActivity.this, "The recipe has been Bookmarked.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            try {
+                                mRootRef.setValue(null);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }, 300, 300, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        String e = databaseError.toString();
+                        Toast.makeText(RecipeActivity.this, e, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+        img = findViewById(R.id.recipe_image);
+        title = findViewById(R.id.recipe_title);
+        instructions = findViewById(R.id.recipe_instructions);
+        getRecipeData(recipeId);
+
+        mRootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i("mRootRef", String.valueOf(dataSnapshot));
+                if (dataSnapshot.getValue() != null) {
+                    like = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        myrv.setLayoutManager(new GridLayoutManager(this, 2));
+    }
+
+
+    private void getRecipeData(final String recipeId) {
+        String URL = " https://api.spoonacular.com/recipes/" + recipeId + "/information?apiKey=" + api_key;
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET,
+                URL,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            try {
+                                Picasso.get().load((String) response.get("image")).into(img);
+                            } catch (Exception e) {
+                                img.setImageResource(R.drawable.nopicture);
+                            }
+                            title.setText((String) response.get("title"));
+
+                            if (response.get("instructions").equals("")) {
+                                throw new Exception("No Instructions");
+                            } else
+                                instructions.setText(Html.fromHtml((String) response.get("instructions")));
+                        } catch (Exception e) {
+                            String msg  = null;
+                            try {
+                                msg = "Unfortunately, the recipe you were looking for not found, " +
+                                            "to view the original recipe click on the link below:" +
+                                            "<a href=" + response.get("spoonacularSourceUrl") + ">"
+                                            + response.get("spoonacularSourceUrl") + "</a>";
+                            } catch (JSONException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            instructions.setMovementMethod(LinkMovementMethod.getInstance());
+                                instructions.setText(Html.fromHtml(msg));
+                            }
+                        }
+
+
+
+
+                },
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                        Snackbar.make(recipebinding.getRoot(), "Error", Snackbar.LENGTH_LONG).show();
+                        Log.i("the res is error:", error.toString());
                     }
-                });
-                queue.add(imgReq);
-            }
-
-            @Override
-            public int getItemCount() {
-                return recipes.size();}
-
-        });
-        recipebinding.recipeList.setLayoutManager(new LinearLayoutManager(this));
-
-        }
-    }
-
-
+                }
+        );
+        requestQueue.add(jsonObjectRequest);
+}}
 

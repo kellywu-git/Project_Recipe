@@ -37,5 +37,18 @@
     <string name="click">click here</string>
     <string name="errorMessage">Error</string>
     <string name="searchRecipe">search recipe</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="favourite">Your favourite recipe</string>
+    <string name="fav">"Saved "</string>
+    <string name="empty">empty\n</string>
+    <string name="fav_recipe">favorite recipe</string>
+    <string name="food_name">food name</string>
+    <string name="salad">salad\n</string>
+    <string name="soup">soup\n</string>
+    <string name="beverage">beverage</string>
+    <string name="appetizer">appetizer</string>
+    <string name="desserts">desserts</string>
+    <string name="fingerfood">fingerfood</string>
 
 </resources>
