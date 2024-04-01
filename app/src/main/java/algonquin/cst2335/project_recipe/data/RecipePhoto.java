@@ -1,5 +1,6 @@
 package algonquin.cst2335.project_recipe.data;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.PrimaryKey;
 import androidx.room.Entity;
@@ -12,20 +13,18 @@ import androidx.room.Entity;
 @Entity
 public class RecipePhoto
 {
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name="id")
-    public int id;
+    @PrimaryKey
+    @NonNull
+    public String id;
 
-   @ColumnInfo(name="pid")
-   public String pid;
     @ColumnInfo(name="title")
     public String title;
 
     @ColumnInfo(name="summary")
     public String summary;
 
-   @ColumnInfo(name="URL")
-    public String URL;
+   @ColumnInfo(name="SourceUrl")
+    public String sourceUrl;
 
     /**
      * constructors - with no parameters.
@@ -43,23 +42,27 @@ public class RecipePhoto
      */
      public RecipePhoto(String id, String title, String summary, String URL){
    //     this.id = id;
-       this.pid = id;
+       this.id = id;
         this.title = title;
         this.summary = summary;
-        this.URL = URL;
+        this.sourceUrl = sourceUrl;
     }
-//    public String getPid(){
-//        return this.pid;
-//    }
-//    public String getTitle(){
-//        return this.title;
-//    }
-//    public String getSummary(){
-//        return this.summary;
-//    }
-//    public String getURL(){
-//        return this.URL;
-//    }
+
+    public RecipePhoto(String id, String title, String image) {
+    }
+
+    public String getId(){
+        return this.id;
+    }
+    public String getTitle(){
+        return this.title;
+    }
+    public String getSummary(){
+        return this.summary;
+    }
+    public String getSourceUrl(){
+        return this.sourceUrl;
+    }
 }
 
 ///information?apiKey=432da05c987f4b7fab39e7a708c0de77

@@ -136,7 +136,7 @@ public class RecipeActivity extends AppCompatActivity {
         }
              recipeModel.selectedRecipe.observe(this, (newRecipe)->
              {
-                String pathname=getFilesDir() + "/" + newRecipe.id + ".png";
+                String pathname=getFilesDir() + "/" + newRecipe.id + ".jpg";
                 File file=new File(pathname);
                 if(file.exists())
                 {
@@ -149,18 +149,19 @@ public class RecipeActivity extends AppCompatActivity {
 
                 }
                 else {
-                    ImageRequest imgReq = new ImageRequest(newRecipe.URL, new Response.Listener<Bitmap>()
+                    ImageRequest imgReq = new ImageRequest(newRecipe.sourceUrl, new Response.Listener<Bitmap>()
                     {
                         @Override
                         public void onResponse(Bitmap bitmap) {
-                            Toast.makeText(getApplicationContext(), newRecipe.URL, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), newRecipe.sourceUrl,
+                                    Toast.LENGTH_LONG).show();
                             Bitmap image = bitmap;
                             RecipePhotoDetailFragment recipeFragment = new RecipePhotoDetailFragment(newRecipe, image);
                             getSupportFragmentManager().beginTransaction().addToBackStack("")
                                     .replace(R.id.fragmentLocation, recipeFragment).commit();
                             try {
                                 image.compress(Bitmap.CompressFormat.PNG, 100, RecipeActivity.this
-                                        .openFileOutput(newRecipe.id + ".jpg", Activity.MODE_PRIVATE));
+                                        .openFileOutput(newRecipe.id + image, Activity.MODE_PRIVATE));
                             } catch (FileNotFoundException e) {
                                 throw new RuntimeException(e);
                             }
@@ -185,7 +186,7 @@ public class RecipeActivity extends AppCompatActivity {
 
         recipebinding.searchBtn.setOnClickListener(click->{
 //            String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
-//            String ApiKey = "&apiKey=432da05c987f4b7fab39e7a708c0de77";
+//            String ApiKey = "&apiKey=6c93a30ed6624a03be850e3d2c118b6b";
 
             recipeSearch = recipebinding.searchRecipe.getText().toString();
             recipes.clear();
@@ -210,21 +211,27 @@ public class RecipeActivity extends AppCompatActivity {
             {
                 String stringURL = null;
            //     stringURL = SpoonUrl + recipeSearch + ApiKey;
-                    stringURL = "https://api.spoonacular.com/recipes/complexSearch?query=" +recipeSearch+ "&apiKey=6c93a30ed6624a03be850e3d2c118b6b";
+                String SpoonUrl = "https://api.spoonacular.com/recipes/complexSearch?query=";
+                String ApiKey = "6c93a30ed6624a03be850e3d2c118b6b";
+                    stringURL = SpoonUrl +recipeSearch+ "&apiKey="+ ApiKey;
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, stringURL, null,
                         (response) ->
                         {
                             try
                             {
-                                JSONArray recipeArray = response.getJSONArray("recipes");
+                                JSONArray recipeArray = response.getJSONArray("results");
                                 int size = recipeArray.length() > 10 ? 10 : recipeArray.length();
                                 for (int i = 0; i < size; i++) {
                                     JSONObject j = recipeArray.getJSONObject(i);
+                                    JSONObject id = j.getJSONObject("id");
                                     JSONObject title = j.getJSONObject("title");
-                                    String img = j.getString("img_src").replace("http", "https");
-                                    JSONObject s = j.getJSONObject("summary");
-                                    RecipePhoto n = new RecipePhoto(j.getString("id"), title.getString("title"),
-                                            s.getString("summary"), img);
+                                    String img = j.getString("image");
+
+                                 String secondRequest = "https://api.spoonacular.com/recipes/"+ id +"/information?apiKey="
+                                 +ApiKey;
+
+                                 RecipePhoto n = new RecipePhoto(j.getString("id"),j.getString("title"),j.getString("image"));
+
                                     recipes.add(n);
 
                                     Executor thread = Executors.newSingleThreadExecutor();
@@ -272,7 +279,7 @@ public class RecipeActivity extends AppCompatActivity {
                 String name = recipes.get(position).title;
                 holder.titleText.setText(name);
 
-                ImageRequest imgReq = new ImageRequest(recipes.get(position).URL, new Response.Listener<Bitmap>()
+                ImageRequest imgReq = new ImageRequest(recipes.get(position).sourceUrl, new Response.Listener<Bitmap>()
                 {
                     @Override
                     public void onResponse(Bitmap bitmap)

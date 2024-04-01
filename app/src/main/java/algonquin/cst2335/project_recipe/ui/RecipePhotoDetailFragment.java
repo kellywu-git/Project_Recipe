@@ -70,7 +70,7 @@ public class RecipePhotoDetailFragment extends Fragment
             thread.execute(()->{
                 boolean exisedRecipe=false;
                 for(RecipePhoto rs: rDAO.getAllrecipes()){
-                    if(rs.pid.equals(selected.pid)){
+                    if(rs.id.equals(selected.id)){
                         Snackbar.make(binding.getRoot(),getResources().getString(R.string.alreadyexisted),
                                 Snackbar.LENGTH_LONG).show();
                         exisedRecipe=true;
@@ -104,7 +104,7 @@ public class RecipePhotoDetailFragment extends Fragment
     });
         binding.url.setOnClickListener(click -> {
             Intent browserIntent = new Intent("android.intent.action.VIEW",
-                    Uri.parse(selected.URL));
+                    Uri.parse(selected.sourceUrl));
             startActivity(browserIntent);
         });
         return binding.getRoot();
